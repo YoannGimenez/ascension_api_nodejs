@@ -12,6 +12,7 @@ const authController = {
         fieldValidation.textValidator('username', true, 3, 50, 'Username');
         fieldValidation.emailValidator('email', true);
         fieldValidation.passwordValidator('password');
+        // fieldValidation.confirmPasswordValidator('confirmPassword');
 
         const errors = await fieldValidation.validateRules(req);
 
@@ -23,20 +24,33 @@ const authController = {
             const registerData = req.body;
 
             if (registerData.password !== registerData.confirmPassword){
-                return res.status(400).json({ error: "Passwords do not match.", status: 409 });
+                return res.status(400).json({ errors: [{
+                    msg : "Passwords do not match.",
+                    path: "confirmPassword"
+                    }],
+                    status: 409 });
             }
+
             const existingUserEmail = await User.findOne({where: {email: registerData.email}});
             if (existingUserEmail) {
-                return res.status(409).json({ error: "Email address is already in use.", status: 409 });
+                return res.status(409).json({ errors: [{
+                        msg : "Email address is already in use.",
+                        path: "email"
+                    }],
+                    status: 409 });
             }
             const existingUserUsername = await User.findOne({where: {username: registerData.username}});
             if (existingUserUsername) {
-                return res.status(409).json({ error: "Username is already in use.", status: 409 });
+                return res.status(409).json({ errors: [{
+                        msg : "Username is already in use.",
+                        path: "username"
+                    }],
+                    status: 409 });
             }
             registerData.password = await authController._hashPassword(registerData.password);
             let user = await User.create(registerData);
             let token = authController._generateToken(user);
-            res.status(201).json({token});
+            res.status(201).json({token : token});
 
         } catch (err) {
             res.status(500).json({
