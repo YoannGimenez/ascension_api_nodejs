@@ -1,7 +1,8 @@
 require('dotenv').config();
 const express = require('express');
+const cors = require('cors');
 const bodyParser = require('body-parser');
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 4000;
 const sequelize  = require('./config/sequelize')
 const fs = require('fs');
 const passport = require('passport');
@@ -19,6 +20,7 @@ const privateKEY = fs.readFileSync('./private.pem', 'utf8');
 const publicKEY = fs.readFileSync('./public.pem', 'utf8');
 
 const app = express();
+app.use(cors());
 app.use(passport.initialize());
 app.use(checkApiKey);
 app.use(bodyParser.json());
