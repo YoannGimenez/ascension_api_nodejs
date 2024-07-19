@@ -1,0 +1,8 @@
+const POST_ENUM = {
+    POST_USER: 'POST_USER',
+    POST_DEV: 'POST_DEV',
+    POST_MODERATOR: 'POST_MODERATOR',
+    POST_ADMIN: 'POST_ADMIN',
+}
+
+module.exports = POST_ENUM;
