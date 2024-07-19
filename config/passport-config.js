@@ -10,7 +10,7 @@ const opts = {
 module.exports = passport => {
     passport.use(
         new JwtStrategy(opts, async (jwt_payload, done) => {
-            const user = User.findOne({where: {username: jwt_payload.username}});
+            const user = User.findOne({where: {id: jwt_payload.userId}});
             if (user){
                 return done(null, user);
             }

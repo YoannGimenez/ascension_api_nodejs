@@ -2,6 +2,7 @@ const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const FieldValidation = require('../middleware/fieldValidation');
+const ROLE_ENUM = require("../enums/role.enum");
 
 
 const authController = {
@@ -48,6 +49,7 @@ const authController = {
                     status: 409 });
             }
             registerData.password = await authController._hashPassword(registerData.password);
+            registerData.role = ROLE_ENUM.ROLE_USER;
             let user = await User.create(registerData);
             let token = authController._generateToken(user);
             res.status(201).json({token : token});
@@ -68,17 +70,17 @@ const authController = {
 
             const loginData = req.body;
 
-            const existingUserUsername = await User.findOne({where: {username: loginData.username}});
-            if (!existingUserUsername) {
+            const existingUser = await User.findOne({where: {username: loginData.username}});
+            if (!existingUser) {
                 return res.status(409).json({ error: "Incorrect username or password", status: 409 });
             }
 
-            const passwordMatch = await bcrypt.compare(loginData.password, existingUserUsername.password);
+            const passwordMatch = await bcrypt.compare(loginData.password, existingUser.password);
             if (!passwordMatch){
                 return res.status(409).json({ error: "Incorrect username or password", status: 409 });
             }
 
-            let token = authController._generateToken(existingUserUsername);
+            let token = authController._generateToken(existingUser);
             res.status(201).json({token});
 
         } catch(err) {
@@ -93,6 +95,7 @@ const authController = {
     _generateToken: (user) => {
         const payload = {
             userId: user.id,
+            role: user.role
         };
 
         return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '4h' });

@@ -8,12 +8,15 @@ const fs = require('fs');
 const passport = require('passport');
 const passportConfig = require('./config/passport-config')(passport);
 const checkApiKey = require('./middleware/apiKey');
+
 // MODELS
 const User = require('./models/User');
+const Post = require('./models/Post');
 
 // ROUTES
 const authRoute = require('./routes/auth.route');
 const userRoute = require('./routes/user.route');
+const postRoute = require('./routes/post.route');
 
 // KEYS
 const privateKEY = fs.readFileSync('./private.pem', 'utf8');
@@ -27,6 +30,7 @@ app.use(bodyParser.json());
 
 app.use('/api',authRoute);
 app.use('/api/users',userRoute);
+app.use('/api/posts',postRoute);
 
 sequelize.sync({ alter: true })
     .then(() => {
