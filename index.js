@@ -4,6 +4,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const port = process.env.PORT || 4000;
 const sequelize  = require('./config/sequelize')
+const mongoose = require('./config/mongoose');
 const fs = require('fs');
 const passport = require('passport');
 const passportConfig = require('./config/passport-config')(passport);
