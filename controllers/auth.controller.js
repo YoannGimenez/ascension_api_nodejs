@@ -3,6 +3,8 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const FieldValidation = require('../middleware/fieldValidation');
 const ROLE_ENUM = require("../enums/role.enum");
+const UserProgress = require("../models/UserProgress");
+const {Logger} = require("sequelize/lib/utils/logger");
 
 
 const authController = {
@@ -52,6 +54,18 @@ const authController = {
             registerData.role = ROLE_ENUM.ROLE_USER;
             let user = await User.create(registerData);
             let token = authController._generateToken(user);
+
+            let userProgress = new UserProgress({
+                user_id: user.id,
+                run_count: 0,
+                run_win_count: 0,
+                run_char_count: [],
+                achievements: []
+            });
+            await userProgress.save();
+
+            console.log(userProgress)
+
             res.status(201).json({token : token});
 
         } catch (err) {
